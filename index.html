@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<title>TD GAME</title>
+
+	<script src="public/libraries/p5.js"></script>
+	<script src="public/libraries/p5.dom.js"></script>
+	<script src="public/libraries/p5.sound.js"></script>
+	<script src="public/map.js"></script>
+	<script src="public/sketch.js"></script>
+	<script src="public/enemyClass.js"></script>
+	<script src="public/towerClass.js"></script>
+	<script src="public/allTowers.js"></script>
+	<script src="public/mapArrays.js"></script>
+
+</head>
+<body>
+	<header>
+		<h1>Castle Tower Defense!</h1>
+	</header>
+
+	<main>
+
+		<div id="left-asides">
+			<aside id="game-aside">
+				<div class="game-buttons">
+					<button id="grid-toggle" onclick="toggleGrid()">Toggle Grid</button>
+					<button id="restart-game" onclick="restartGame()">Restart Game</button>
+					<button id="next-level" onclick="nextLevel()">Next level</button>
+					<button id="pause-game" onclick="togglePause()">Pause Game</button>
+					<button id="auto-start" onclick="toggleAutoStart()">Toggle Auto Start</button>
+				</div>
+			</aside>
+			<aside id="store-aside">
+				<h2>Store</h2>
+				<div class="store">
+					<button class="arrow" onClick="setTower('arrow')">Arrow Tower - $50</button>
+					<p><button class="sniper" onClick="setTower('sniper')">Sniper Tower - $80</button></p>
+					<p><button class="electricity" onClick="setTower('electricity')">Electricity Tower - $150</button></p>
+					<p><button class="gatling" onClick="setTower('gatling')">Gatling Gun - $200</button></p>
+					<p><button class="farm" onClick="setTower('farm')">Farm - $250</button></p>
+				</div> 
+			</aside>
+		</div>
+
+		<div id="canvas-sketch"></div>
+
+		<div id="right-asides">
+			<aside id="level-info">
+				<p id="level"></p>
+				<p id="lives"></p>
+				<p id="money"></p>
+				<p id="ticks"></p>
+			</aside>
+			<aside id="tower-info">
+				<div id="tower-div">
+					<h3 id="name"></h3>
+					<p id="cost"></p>
+					<p id="range"></p>
+					<p id="damage"></p>
+					<p class="tower-description" id="description"></p>
+					<div class="tower-button" id="info-button">
+						<p><button class="sell" onclick="sell(selectedTower)">Sell</button></p>
+						<p><button class="upgrade" onclick="upgrade(selectedTower)">Upgrade</button></p>
+					</div>
+				</div>
+			</aside>
+		</div>
+
+	</main>
+</body>
+</html>

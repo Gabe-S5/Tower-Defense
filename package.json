@@ -1,0 +1,21 @@
+{
+  "name": "tdgame",
+  "version": "1.0.0",
+  "description": "",
+  "main": "towerDefense.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "TD.io game"
+  },
+  "author": "Gabriel Salisi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "http-server": "^0.12.3",
+    "nodemon": "^2.0.7",
+    "socket.io": "^3.1.1"
+  }
+}

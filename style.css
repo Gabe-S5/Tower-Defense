@@ -1,0 +1,169 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: rgb(0, 0, 0);
+    color: #a0ff33;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Courier New', Courier, monospace;
+    max-height: 100vh;
+    min-height: 100vh;;
+    overflow: hidden;
+}
+
+header, aside, #canvas-sketch {
+    border: 3px groove #0130ca;
+    border-radius: 10px;
+    margin: 2px;
+}
+
+header, aside {
+    background-color: #00639c;
+}
+
+header {
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    text-align: center;
+    text-shadow: 1px 1px #000;
+}
+
+h1 {
+    font-size: 40px;
+}
+main {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+#left-asides, #right-asides {
+    display: flex;
+    flex-direction: column;
+}
+
+#left-asides {
+    margin-left: 2px;
+    min-width: 200px;
+}
+
+#right-asides {
+    margin-right: 2px;
+    min-width: 150px;
+}
+
+aside {
+    padding: 14px;
+}
+
+button {
+    height: 35px;
+}
+
+
+#game-aside button {
+    background-color: rgb(109, 109, 109);
+    color: #a0ff33;
+    min-width: 100%;
+    text-align: center;
+    text-shadow: none;
+    font-size: 1.0em;
+}
+
+.game-buttons button {
+    display: block;
+    flex: 1;
+    text-align: center;
+}
+
+#store-aside {
+    flex: 1;
+}
+
+#store-aside button {
+    color: #fafafa;
+    min-width: 100%;
+    text-align: center;
+    text-shadow: none;
+    font-size: 1.0em;
+}
+
+.store button {
+    display: block;
+    flex: 1;
+    text-align: center;
+}
+
+.store p {
+    margin: 0;
+}
+
+#canvas-sketch {
+    background-color: black;
+    flex: 1;
+    margin: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+canvas {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#level-info {
+    font-size: 1.4em;
+}
+
+#tower-info {
+    flex: 1;
+    max-width: 160px;
+}
+
+#tower-info button {
+    background-color: rgb(109, 109, 109);
+    color: #a0ff33;
+    min-width: 100%;
+    text-align: center;
+    text-shadow: none;
+    font-size: 1.0em;
+}
+
+.tower-button p {
+    margin: 0;
+}
+
+.arrow {
+    background-color: rgb(226, 211, 2);
+}
+
+.sniper {
+    background-color: rgb(212, 0, 0);
+}
+
+.electricity {
+    background-color: rgb(0, 116, 224);
+}
+
+.gatling {
+    background-color: rgb(144, 0, 228);
+}
+
+.farm {
+    background-color: rgb(14, 117, 0);
+}
+
+.sell {
+    background-color: #fafafa;
+}
