@@ -85,6 +85,10 @@ function draw() {
 			rCD = roundCoolDown
 		}
 	}
+
+	if (lives <= 0) {
+		restartGame()
+	}
 }
 
 // Shows info when tower is clicked in the store
