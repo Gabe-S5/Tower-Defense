@@ -8,6 +8,7 @@ towerTypes.arrow = {
     damage: 15,
     color: [226, 211, 2],
     fireCoolDown: 1,
+    targetCount: 1,
     description: "A basic arrow tower with well balanced stats."
 }
 
@@ -19,6 +20,7 @@ towerTypes.sniper = {
     damage: 40,
     color: [212, 0, 0],
     fireCoolDown: 2,
+    targetCount: 1,
     description: "Fires strong shots at long range but has slow firerate. "
 }
 
@@ -29,7 +31,8 @@ towerTypes.electricity = {
     range: 5,
     damage: 5,
     color: [0, 116, 224],
-    fireCoolDown: 0.1,
+    fireCoolDown: 0.6,
+    targetCount: 3,
     description: "Shoots bolts of electricity capable of bouncing to multiple enemies."
 }
 
@@ -41,6 +44,7 @@ towerTypes.gatling = {
     damage: 15,
     color: [144, 0, 228],
     fireCoolDown: 0.4,
+    targetCount: 1,
     description: "Fires bullets towards mouse cursor. (Bullets still have a max range)"
 }
 
@@ -51,6 +55,7 @@ towerTypes.farm = {
     damage: 0,
     color: [14, 117, 0],
     fireRate: 0,
+    targetCount: 1,
     description: "Generates cash at the end of every round." 
 }
 
