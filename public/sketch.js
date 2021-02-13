@@ -4,9 +4,10 @@ var towers   // Store all towers in array
 var level    // Current level
 var lives    // Number of lives
 var money    // Total cash
+var EORcash	 // End of Round cash reward
 
 var FR            = 60             // Set Framerate
-var roundCoolDown = 3 * FR         // Seconds before next level
+var roundCoolDown = 1 * FR         // Seconds before next level
 var rCD           = roundCoolDown  // Temporary variable
 var ticks  						   // Number of frames passed
 
@@ -80,6 +81,7 @@ function draw() {
 		if (!paused && autoStart) { rCD-- } 
 		if (rCD === 0) {
 			nextLevel()
+			money += EORcash
 			rCD = roundCoolDown
 		}
 	}
@@ -187,6 +189,7 @@ function restartGame() {
 	level        = 0
 	lives        = 100
 	money        = 1000
+	EORcash      = 50 
 	ticks        = 0
 	toPlace      = false
 	towerClicked = false
