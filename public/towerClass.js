@@ -23,10 +23,12 @@ function tower(x, y, towerInfo, grids) {
     }
 
     // Shoots when cooldown allows it
-    this.attack = function(e, i) {
+    this.attack = function(e, i, attacks) {
         if (this.fireRate <= 0) {
-            e[i].health -= this.damage
-            this.fireRate = this.fireCoolDown * FR
+            for (let j = attacks, k = i; j > 0 && k < e.length; k++, j--) {
+                e[k].health -= this.damage
+                this.fireRate = this.fireCoolDown * FR
+            }
         }
         if (e[i].health <= 0) { this.kill(e, i) }
     }
@@ -42,7 +44,7 @@ function tower(x, y, towerInfo, grids) {
         for (let i = 0; i <= e.length-1; i++) {
             var distSq = sq(this.pos.x + grids/2 - e[i].pos.x) + sq(this.pos.y + grids/2 - e[i].pos.y)
             if (distSq < sq(this.range/2 * grids)) {
-                this.attack(e, i)
+                this.attack(e, i, this.targetCount)
                 break
             }
         }
