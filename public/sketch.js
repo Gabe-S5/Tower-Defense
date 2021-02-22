@@ -225,7 +225,7 @@ function sell(t) {
 }
 
 function upgrade(t) {
-	if (towerClicked) {
+	if (towerClicked && money > t.upgradecost) {
 		t.sell = true
 		var replace = new tower(t.x, t.y, towerTypes[t.id + "2"], gridSize)
 		replace.setStats()
@@ -274,6 +274,7 @@ function updateGameStatus() {
 function updateHoverInfo(hover) {
 	document.getElementById('name').innerHTML          = hover.name
 	document.getElementById('cost').innerHTML          = 'Cost: $' + hover.cost
+	document.getElementById('upgradecost').innerHTML   = 'Upgrade: $' + hover.upgradecost
 	document.getElementById('range').innerHTML         = 'Range: ' + hover.range
 	document.getElementById('damage').innerHTML        = 'Damage: ' + hover.damage
 	document.getElementById('description').innerHTML   = hover.description
