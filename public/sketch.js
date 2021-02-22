@@ -242,7 +242,7 @@ function restartGame() {
 	projectiles  = []
 	level        = 0
 	lives        = 30
-	money        = 500
+	money        = 450
 	EORcash      = 50
 	ticks        = 0
 	toPlace      = false
