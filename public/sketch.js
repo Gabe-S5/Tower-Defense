@@ -241,8 +241,8 @@ function restartGame() {
 	towers       = []
 	projectiles  = []
 	level        = 0
-	lives        = 100
-	money        = 1000
+	lives        = 30
+	money        = 500
 	EORcash      = 50
 	ticks        = 0
 	toPlace      = false
