@@ -248,7 +248,7 @@ function restartGame() {
 	toPlace      = false
 	towerClicked = false
 	paused       = false
-	autoStart    = true
+	autoStart    = false
 }
 
 function nextLevel() {
