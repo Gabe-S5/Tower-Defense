@@ -1,6 +1,7 @@
 var gridSize = 60
 var enemies  // Store enemies in array
 var towers   // Store all towers in array
+var projectiles // Store all projectiles in array
 var level    // Current level
 var lives    // Number of lives
 var money    // Total cash
@@ -30,6 +31,9 @@ function setup() {
 
 function preload() {
 	rectGrass = loadImage('public/imgs/grass_block.png')
+	bow       = loadImage('public/imgs/crossbow.png')
+	arrow     = loadImage('public/imgs/arrow.png')
+	arrowTower= loadImage('public/imgs/arrowTowerTaken.png')
 }
 
 function draw() {
@@ -51,10 +55,34 @@ function draw() {
 
 		if (!paused) e.move()  // Prevents movement when paused
 		
-		if (!e.alive) enemies.splice(i, 1)  // Removes enemy from enemies array when dead
+		if (!e.alive || e.health <= 0) {
+			money += e.value
+			enemies.splice(i, 1)  // Removes enemy from enemies array when dead
+		} 
 	}
 
-	// Draw Towers
+	// Draw projectiles
+	for (let i = projectiles.length - 1; i >= 0; i--) {
+		let p = projectiles[i]
+		p.draw()
+		if (!paused) {
+			 p.update()
+		}
+		if (enemies[p.i] === undefined || !enemies[p.i].alive) { projectiles.splice(i, 1) }
+		else if (dist(p.pos.x, p.pos.y, enemies[p.i].pos.x, enemies[p.i].pos.y) <= 30) {
+			p.enemy.health -= p.towerType.damage
+			projectiles.splice(i, 1)
+		}
+
+		if (inMap(p.pos.x, p.pos.y)) {
+			projectiles.splice(i, 1)
+		}
+		if (dist(p.pos.x, p.pos.y, p.towerType.pos.x, p.towerType.pos.y) >= p.towerType.range * gridSize/2 && p.towerType.targetType !== "chain") {
+			projectiles.splice(i, 1)
+		}
+	}
+
+	// Draw Towers and shoot
 	for (let i = towers.length - 1; i >= 0; i--) {
 		let t = towers[i]
 		t.draw()
@@ -81,22 +109,26 @@ function draw() {
 		if (!paused && autoStart) { rCD-- } 
 		if (rCD === 0) {
 			nextLevel()
-			money += EORcash
 			rCD = roundCoolDown
 		}
 	}
 
+	// Game Over
 	if (lives <= 0) {
 		restartGame()
 	}
 }
 
+function inMap(x, y) {
+	return (x <= 0 || x >= width || y >= height || y <= 0)
+}
+
 // Shows info when tower is clicked in the store
 function setTower(type) {
-	    toPlace       = true
-	    towerClicked  = false
-	    selectedTower = type
-	var t             = new tower(0, 0, towerTypes[selectedTower], gridSize)
+	toPlace       = true
+	towerClicked  = false
+	selectedTower = type
+	var t = new tower(0, 0, towerTypes[selectedTower], gridSize)
 	t.setStats()
 	updateHoverInfo(t)
 }
@@ -116,7 +148,7 @@ function showRange(type, x, y) {
 // P5 function, when mouse is clicked and released
 function mouseClicked() {
 	// Mouse not within the map
-	if (mouseX <= 0 || mouseX >= width || mouseY >= height || mouseY <= 0) return
+	if (inMap(mouseX, mouseY)) return
 	// Mouse on the enemy track
 	if (mouseOnTrack(mouseX, mouseY)) return
 	
@@ -154,15 +186,15 @@ function mouseOnTrack(x, y) {
 	
 	for (let i = 0; i <= 9; i++) {
 		var currGrid = createVector(mapGrid.x[i],mapGrid.y[i])
-		for (let j = 0; j <= mapGrid.size[i]; j++) {
+		for (let j = 0; j <= mapGrid.size[i] - 1; j++) {
 			if (i % 2 === 0) {
 				if (currGrid.x === x && currGrid.y === y) return true
-				if (currGrid.x + 1 === x && currGrid.y === y) return true
+				else if (currGrid.x + 1 === x && currGrid.y === y) return true
 				currGrid.y += 1
 			}
 			else {
 				if (currGrid.x === x && currGrid.y === y) return true
-				if (currGrid.x === x && currGrid.y + 1 === y) return true
+				else if (currGrid.x === x && currGrid.y + 1 === y) return true
 				currGrid.x += 1
 			}
 		}
@@ -178,27 +210,45 @@ function placeTower(t) {
 		toPlace  = false
 		updateHoverInfo(t)
 		towers.push(t)
+		if (t.name === "Farm") { EORcash += t.value }
 	}
 }
 
 function sell(t) {
+	if (towerClicked) {
+		money += t.cost * 0.5
+		t.sell = true
+		if (t.name === "Farm") { EORcash -= t.value }
+	}
 	toPlace = false
 	towerClicked = false
-	money += t.cost * 0.5
-	t.sell = true
 }
+
+function upgrade(t) {
+	if (towerClicked) {
+		t.sell = true
+		var replace = new tower(t.x, t.y, towerTypes[t.id + "2"], gridSize)
+		replace.setStats()
+		updateHoverInfo(replace)
+		towers.push(replace)
+		money -= replace.cost
+		selectedTower = replace
+	}
+}
+
 function restartGame() {
 	enemies      = []
 	towers       = []
+	projectiles  = []
 	level        = 0
 	lives        = 100
 	money        = 1000
-	EORcash      = 50 
+	EORcash      = 50
 	ticks        = 0
 	toPlace      = false
 	towerClicked = false
 	paused       = false
-	autoStart    = false
+	autoStart    = true
 }
 
 function nextLevel() {
@@ -210,6 +260,7 @@ function nextLevel() {
 		// Go to next level and restart frame counter
 		level += 1
 		ticks  = 0
+		money += EORcash
 	}
 }
 
@@ -239,6 +290,16 @@ function drawBackground(g) {
 	}
 }
 
+function rotate_and_draw_image(IMAGE, img_x, img_y, img_width, img_height, img_angle){
+    imageMode(CENTER);
+    translate(img_x+img_width/2, img_y+img_width/2);
+    rotate(Math.PI/180*img_angle);
+    image(IMAGE, 0, 0, img_width, img_height);
+    rotate(-Math.PI / 180 * img_angle);
+    translate(-(img_x+img_width/2), -(img_y+img_width/2));
+    imageMode(CORNER);
+}
+
 function toggleGrid() { gridState = !gridState }
 
 function togglePause() { paused = !paused }
@@ -258,6 +319,9 @@ function keyPressed() {
 		case 65: 
 			setTower('arrow')
 			break
+		case 67: 
+			paused = !paused
+			break
 		case 69: 
 			setTower('electricity')
 			break
@@ -267,14 +331,14 @@ function keyPressed() {
 		case 71: 
 			setTower('gatling')
 			break
-		case 80: 
-			paused = !paused
-			break
 		case 82: 
 			restartGame()
 			break
 		case 83:
 			setTower('sniper')
+			break
+		case 85:
+			upgrade(selectedTower)
 			break
 		case 90:
 			sell(selectedTower)
