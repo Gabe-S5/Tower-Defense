@@ -224,6 +224,7 @@ function sell(t) {
 	towerClicked = false
 }
 
+// Upgrade Tower
 function upgrade(t) {
 	if (towerClicked && money > t.upgradecost) {
 		t.sell = true
