@@ -17,9 +17,16 @@ function enemy(x, y, grids) {
     this.draw = function() {
         fill(this.color)
         ellipse(this.pos.x, this.pos.y, grids, grids)
-        if (this.health < this.maxHP) {
+        if (this.health < this.maxHP && this.health >= 0) {
             fill(255,0,0)
             rect(this.pos.x - grids/2, this.pos.y + grids - 10, grids * (this.health/this.maxHP), 10)
+        }
+    }
+
+    this.update = function() {
+        if (this.health <= 0) {
+            money += this.value
+            this.kill()
         }
     }
 
@@ -71,7 +78,6 @@ function enemy(x, y, grids) {
 
     // Gives money for killing
     this.kill = function() {
-        money      += this.value
         this.alive  = false
     }
 

@@ -32,8 +32,10 @@ function setup() {
 function preload() {
 	rectGrass = loadImage('public/imgs/grass_block.png')
 	bow       = loadImage('public/imgs/crossbow.png')
-	arrow     = loadImage('public/imgs/arrow.png')
-	arrowTower= loadImage('public/imgs/arrowTowerTaken.png')
+	earthAttack = loadImage('public/imgs/arrow.png')
+	waterAttack = loadImage('public/imgs/waterSplash.png')
+	fireAttack = loadImage('public/imgs/fireSplash.png')
+	earthAttack = loadImage('public/imgs/earthSplash.png')
 }
 
 function draw() {
@@ -53,35 +55,17 @@ function draw() {
 		let e = enemies[i]
 		e.draw()  // Draws enemy on canvas
 
-		if (!paused) e.move()  // Prevents movement when paused
+		// Prevents movement when paused
+		if (!paused) {
+			e.move()
+			e.update()
+		}
 		
-		if (!e.alive || e.health <= 0) {
-			money += e.value
+		if (!e.alive) {
 			enemies.splice(i, 1)  // Removes enemy from enemies array when dead
 		} 
 	}
-
-	// Draw projectiles
-	for (let i = projectiles.length - 1; i >= 0; i--) {
-		let p = projectiles[i]
-		p.draw()
-		if (!paused) {
-			 p.update()
-		}
-		if (enemies[p.i] === undefined || !enemies[p.i].alive) { projectiles.splice(i, 1) }
-		else if (dist(p.pos.x, p.pos.y, enemies[p.i].pos.x, enemies[p.i].pos.y) <= 30) {
-			p.enemy.health -= p.towerType.damage
-			projectiles.splice(i, 1)
-		}
-
-		if (inMap(p.pos.x, p.pos.y)) {
-			projectiles.splice(i, 1)
-		}
-		if (dist(p.pos.x, p.pos.y, p.towerType.pos.x, p.towerType.pos.y) >= p.towerType.range * gridSize/2 && p.towerType.targetType !== "chain") {
-			projectiles.splice(i, 1)
-		}
-	}
-
+	
 	// Draw Towers and shoot
 	for (let i = towers.length - 1; i >= 0; i--) {
 		let t = towers[i]
@@ -93,17 +77,48 @@ function draw() {
 		if (t.sell) towers.splice(i, 1)
 	}
 
+	// Draw projectiles
+	for (let i = projectiles.length - 1; i >= 0; i--) {
+		let p = projectiles[i]
+		let t = p.towerType
+		p.draw()
+		if (!paused) {
+			p.update()
+		}
+
+		// Check if projectile is close enough to ANY enemy
+		if (t.targetType === "straight") {
+			if (projCollision(p.pos.x, p.pos.y, t.damage)) { projectiles.splice(i, 1) }
+		}
+		else if (dist(p.pos.x, p.pos.y, p.e.pos.x, p.e.pos.y) <= 30) {
+			p.e.health -= t.damage
+			projectiles.splice(i, 1)
+		}
+		// In case the target dies while projectile is still flying, delete it
+		if (t.targetType !== "straight" && p.e.health <= 0) { projectiles.splice(i, 1) }
+
+		// Delete projectiles that are outside of the map
+		if (outsideMap(p.pos.x, p.pos.y)) { projectiles.splice(i, 1) }
+
+		// Delete projectiles once they exceed range of the tower, mostly for the earth tower
+		else if (outsideRange(p.pos.x, p.pos.y, t.pos.x, t.pos.y, t.range) && t.targetType === "straight") {
+			projectiles.splice(i, 1)
+		}
+	}
+
 	// About to place tower, visualize range on screen
 	if (toPlace) {
 		showRange(towerTypes[selectedTower], mouseX, mouseY)
 	}
 	// Show range of clicked tower
 	if (towerClicked) {
-		showRange(selectedTower, selectedTower.pos.x + gridSize/2, selectedTower.pos.y + gridSize/2)
+		showRange(selectedTower, selectedTower.pos.x, selectedTower.pos.y)
 	}
 
 	// When no enemies on the board
 	if (levelOver()) {
+		money += EORcash
+		EORcash = 0
 		if (!autoStart) return
 		// Waits for level cooldown time
 		if (!paused && autoStart) { rCD-- } 
@@ -119,7 +134,22 @@ function draw() {
 	}
 }
 
-function inMap(x, y) {
+function projCollision(x, y, dmg) {
+	for (let i = 0; i <= enemies.length - 1; i++) {
+		let e = enemies[i]
+		if (dist(x + 20, y + 15, e.pos.x, e.pos.y) <= 30) {
+			e.health -= dmg
+			return true
+		}
+	}
+	return false
+}
+
+function outsideRange(x, y, tx, ty, r) {
+	return dist(x, y, tx, ty) >= r * gridSize/2
+}
+
+function outsideMap(x, y) {
 	return (x <= 0 || x >= width || y >= height || y <= 0)
 }
 
@@ -142,20 +172,23 @@ function showRange(type, x, y) {
 	
 	stroke(50,50,50,175)
 	fill(type.color[0], type.color[1], type.color[2], 210)
-	rect(x-gridSize/2, y-gridSize/2, gridSize, gridSize)
+	ellipse(x, y, gridSize, gridSize)
+	ellipseMode(CENTER)
 }
 
 // P5 function, when mouse is clicked and released
 function mouseClicked() {
 	// Mouse not within the map
-	if (inMap(mouseX, mouseY)) return
+	if (outsideMap(mouseX, mouseY)) return
 	// Mouse on the enemy track
-	if (mouseOnTrack(mouseX, mouseY)) return
-	
+	if (mouseOnTrack(mouseX, mouseY)) {
+		towerClicked = false
+		return
+	}
 	// Check if mouse clicked on a tower
 	var blocked = false
 	for (var i = towers.length - 1; i >= 0; i--) {
-		if (towers[i].x === Math.floor(mouseX/gridSize) && towers[i].y === Math.floor(mouseY/gridSize)) {
+		if (towers[i].x === Math.floor(mouseX/gridSize) + 0.5 && towers[i].y === Math.floor(mouseY/gridSize) + 0.5) {
 			blocked = true
 			break
 		}
@@ -175,7 +208,9 @@ function mouseClicked() {
 		return
 	}
 	// Place tower 
-	else { placeTower(new tower(Math.floor(mouseX/gridSize), Math.floor(mouseY/gridSize), towerTypes[selectedTower], gridSize)) }
+	else { 
+		placeTower(new tower(Math.floor(mouseX/gridSize) + 0.5, Math.floor(mouseY/gridSize) + 0.5, towerTypes[selectedTower], gridSize))
+	}
 }
 
 // Checks if mouse is currently on the enemy track
@@ -237,21 +272,6 @@ function upgrade(t) {
 	}
 }
 
-function restartGame() {
-	enemies      = []
-	towers       = []
-	projectiles  = []
-	level        = 0
-	lives        = 30
-	money        = 450
-	EORcash      = 50
-	ticks        = 0
-	toPlace      = false
-	towerClicked = false
-	paused       = false
-	autoStart    = false
-}
-
 function nextLevel() {
 	// Creates number of enemies based on level
 	if (!paused) {
@@ -261,7 +281,7 @@ function nextLevel() {
 		// Go to next level and restart frame counter
 		level += 1
 		ticks  = 0
-		money += EORcash
+		EORcash = 50
 	}
 }
 
@@ -293,13 +313,28 @@ function drawBackground(g) {
 }
 
 function rotate_and_draw_image(IMAGE, img_x, img_y, img_width, img_height, img_angle){
-    imageMode(CENTER);
+	imageMode(CENTER);
     translate(img_x+img_width/2, img_y+img_width/2);
     rotate(Math.PI/180*img_angle);
     image(IMAGE, 0, 0, img_width, img_height);
     rotate(-Math.PI / 180 * img_angle);
     translate(-(img_x+img_width/2), -(img_y+img_width/2));
     imageMode(CORNER);
+}
+
+function restartGame() {
+	enemies      = []
+	towers       = []
+	projectiles  = []
+	level        = 0
+	lives        = 30
+	money        = 1000
+	EORcash      = 0
+	ticks        = 0
+	toPlace      = false
+	towerClicked = false
+	paused       = false
+	autoStart    = false
 }
 
 function toggleGrid() { gridState = !gridState }
@@ -319,7 +354,7 @@ function keyPressed() {
 			document.getElementById('tower-div').style.display = 'none'
 			break
 		case 65: 
-			setTower('arrow')
+			setTower('water')
 			break
 		case 67: 
 			paused = !paused
@@ -331,13 +366,16 @@ function keyPressed() {
 			setTower('farm')
 			break
 		case 71: 
-			setTower('gatling')
+			setTower('earth')
+			break
+		case 80:
+			togglePause()
 			break
 		case 82: 
 			restartGame()
 			break
 		case 83:
-			setTower('sniper')
+			setTower('fire')
 			break
 		case 85:
 			upgrade(selectedTower)

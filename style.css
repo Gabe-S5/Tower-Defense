@@ -144,11 +144,11 @@ canvas {
     margin: 0;
 }
 
-.arrow {
+.water {
     background-color: rgb(226, 211, 2);
 }
 
-.sniper {
+.fire {
     background-color: rgb(212, 0, 0);
 }
 
@@ -156,7 +156,7 @@ canvas {
     background-color: rgb(0, 116, 224);
 }
 
-.gatling {
+.earth {
     background-color: rgb(144, 0, 228);
 }
 

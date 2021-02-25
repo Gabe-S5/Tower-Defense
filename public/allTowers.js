@@ -1,57 +1,61 @@
 var towerTypes = {};
 
 // DPS = 15
-towerTypes.arrow = {
-    id: "arrow",
-    name: "Arrow Tower",
+towerTypes.water = {
+    id: "water",
+    name: "Water Tower",
     cost: 50,
     upgradecost: 175,
     range: 8,
     damage: 15,
-    color: [255, 250, 0],
+    pierce: 1,
+    color: [24, 157, 215],
     fireCoolDown: 1,
     targetCount: 1,
     targetType: "single",
-    description: "A basic arrow tower with well balanced stats."
+    description: "A basic water tower with well balanced stats."
 }
 
-towerTypes.arrow2 = {
-    id: "arrow2",
-    name: "Arrow Tower Lvl 2",
+towerTypes.water2 = {
+    id: "water2",
+    name: "Water Tower Lvl 2",
     cost: 175,
-    upgradecost: "NaN",
+    upgradecost: "MAX",
     range: 10,
     damage: 20,
-    color: [231, 199, 0],
+    pierce: 1,
+    color: [24, 94, 215],
     fireCoolDown: 0.8,
     targetCount: 4,
     targetType: "multi",
-    description: "An upgraded arrow tower that has improved stats and can now shoot 4 enemies at once!"
+    description: "An upgraded water tower that has improved stats and can now shoot 4 enemies at once!"
 }
 
 // DPS 20
-towerTypes.sniper = {
-    id: "sniper",
-    name: "Sniper Tower",
+towerTypes.fire = {
+    id: "fire",
+    name: "Fire Tower",
     cost: 80,
     upgradecost: 225,
     range: 18,
-    damage: 40,
-    color: [212, 0, 0],
+    damage: 60,
+    pierce: 1,
+    color: [231, 71, 1],
     fireCoolDown: 2,
     targetCount: 1,
     targetType: "single",
-    description: "Fires strong shots at long range but has slow firerate. "
+    description: "Fires strong shots at long range but has slow firerate."
 }
 
-towerTypes.sniper2 = {
-    id: "sniper2",
-    name: "Sniper Tower Lvl 2",
+towerTypes.fire2 = {
+    id: "fire2",
+    name: "Fire Tower Lvl 2",
     cost: 225,
-    upgradecost: "NaN",
+    upgradecost: "MAX",
     range: 20,
-    damage: 90,
-    color: [240, 0, 0],
+    damage: 130,
+    pierce: 1,
+    color: [196, 32, 1],
     fireCoolDown: 1.8,
     targetCount: 1,
     targetType: "single",
@@ -67,7 +71,7 @@ towerTypes.electricity = {
     upgradecost: 325,
     range: 5,
     damage: 5,
-    color: [0, 116, 224],
+    color: [253, 247, 53],
     fireCoolDown: 0.6,
     targetCount: 6,
     targetType: "chain",
@@ -78,10 +82,10 @@ towerTypes.electricity2 = {
     id: "electricity2",
     name: "Electricity Tower Lvl 2",
     cost: 325,
-    upgradecost: "NaN",
+    upgradecost: "MAX",
     range: 7,
     damage: 7,
-    color: [0, 130, 240],
+    color: [254, 193, 0],
     fireCoolDown: 0.6,
     targetCount: 10,
     targetType: "chain",
@@ -89,32 +93,34 @@ towerTypes.electricity2 = {
 }
 
 // DPS 37.5
-towerTypes.gatling = {
-    id: "gatling",
-    name: "Gatling Gun",
+towerTypes.earth = {
+    id: "earth",
+    name: "Earth Tower",
     cost: 200,
     upgradecost: 400,
-    range: 15,
+    range: 18,
     damage: 15,
-    color: [144, 0, 228],
+    pierce: 3,
+    color: [126, 86, 42],
     fireCoolDown: 0.4,
     targetCount: 1,
     targetType: "straight",
     description: "Fires bullets towards mouse cursor. (Bullets still have a max range)"
 }
 
-towerTypes.gatling2 = {
-    id: "gatling2",
-    name: "Gatling Gun Lvl 2",
+towerTypes.earth2 = {
+    id: "earth2",
+    name: "Earth Tower Lvl 2",
     cost: 400,
-    upgradecost: "NaN",
-    range: 17,
+    upgradecost: "MAX",
+    range: 22,
     damage: 15,
-    color: [240, 0, 0],
+    pierce: 5,
+    color: [114, 70, 42],
     fireCoolDown: 0.25,
     targetCount: 1,
     targetType: "straight",
-    description: "Fires even faster! "
+    description: "Fires even faster!"
 }
 
 towerTypes.farm = {
@@ -136,7 +142,7 @@ towerTypes.farm2 = {
     id: "farm2",
     name: "Farm Lvl 2",
     cost: 500,
-    upgradecost: "NaN",
+    upgradecost: "MAX",
     range: 2,
     damage: 0,
     color: [14, 180, 0],
