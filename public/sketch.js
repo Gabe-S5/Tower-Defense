@@ -353,32 +353,29 @@ function keyPressed() {
 			towerClicked               = false
 			document.getElementById('tower-div').style.display = 'none'
 			break
-		case 65: 
-			setTower('water')
-			break
 		case 67: 
 			paused = !paused
 			break
 		case 69: 
 			setTower('electricity')
 			break
-		case 70: 
-			setTower('farm')
-			break
-		case 71: 
-			setTower('earth')
-			break
 		case 80:
 			togglePause()
 			break
-		case 82: 
-			restartGame()
+		case 81: 
+			setTower('water')
 			break
-		case 83:
-			setTower('fire')
+		case 82: 
+			setTower('earth')
+			break
+		case 84: 
+			setTower('farm')
 			break
 		case 85:
 			upgrade(selectedTower)
+			break
+		case 87:
+			setTower('fire')
 			break
 		case 90:
 			sell(selectedTower)
