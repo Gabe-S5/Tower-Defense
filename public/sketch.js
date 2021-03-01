@@ -1,4 +1,3 @@
-var gridSize = 60
 var enemies  // Store enemies in array
 var towers   // Store all towers in array
 var projectiles // Store all projectiles in array
@@ -18,24 +17,32 @@ var paused       = false  // Toggling paused state
 var toPlace      = false  // About to place tower
 var towerClicked = false  // Clicked a tower
 var selectedTower
-var viewTower
+
 
 function setup() {
+	mode = 0
 	var div    = document.getElementById('canvas-sketch')
 	var canvas = createCanvas(div.offsetWidth, div.offsetHeight)
 	canvas.parent('canvas-sketch')
+
+	gridSize = div.offsetWidth / 27
 
 	frameRate(FR)
 	restartGame()
 }
 
 function preload() {
+	// Map Images
 	rectGrass = loadImage('public/imgs/grass_block.png')
-	bow       = loadImage('public/imgs/crossbow.png')
-	earthAttack = loadImage('public/imgs/arrow.png')
+
+	// Projectile Sprites
 	waterAttack = loadImage('public/imgs/waterSplash.png')
 	fireAttack = loadImage('public/imgs/fireSplash.png')
 	earthAttack = loadImage('public/imgs/earthSplash.png')
+
+	// Tower Sprites
+	waterTower = loadImage('public/imgs/waterTowerSprite.png')
+	fireTower = loadImage('public/imgs/fireTowerSprite.png')
 }
 
 function draw() {
@@ -90,10 +97,15 @@ function draw() {
 		if (t.targetType === "straight") {
 			if (projCollision(p.pos.x, p.pos.y, t.damage)) { projectiles.splice(i, 1) }
 		}
-		else if (dist(p.pos.x, p.pos.y, p.e.pos.x, p.e.pos.y) <= 30) {
+		else if (dist(p.pos.x, p.pos.y, p.e.pos.x, p.e.pos.y) <= gridSize/2) {
 			p.e.health -= t.damage
-			projectiles.splice(i, 1)
+			if (t.targetType === "chain") {
+				let d = p.onHit()
+				if (!d) { projectiles.splice(i, 1) }
+			}
+			else { projectiles.splice(i, 1)	}
 		}
+
 		// In case the target dies while projectile is still flying, delete it
 		if (t.targetType !== "straight" && p.e.health <= 0) { projectiles.splice(i, 1) }
 
@@ -108,7 +120,8 @@ function draw() {
 
 	// About to place tower, visualize range on screen
 	if (toPlace) {
-		showRange(towerTypes[selectedTower], mouseX, mouseY)
+		showRange(selectedTower, mouseX, mouseY)
+		showTower(selectedTower, mouseX, mouseY)
 	}
 	// Show range of clicked tower
 	if (towerClicked) {
@@ -137,7 +150,7 @@ function draw() {
 function projCollision(x, y, dmg) {
 	for (let i = 0; i <= enemies.length - 1; i++) {
 		let e = enemies[i]
-		if (dist(x + 20, y + 15, e.pos.x, e.pos.y) <= 30) {
+		if (dist(x, y, e.pos.x, e.pos.y) <= 30) {
 			e.health -= dmg
 			return true
 		}
@@ -157,9 +170,8 @@ function outsideMap(x, y) {
 function setTower(type) {
 	toPlace       = true
 	towerClicked  = false
-	selectedTower = type
-	var t = new tower(0, 0, towerTypes[selectedTower], gridSize)
-	t.setStats()
+	var t = new tower(0, 0, towerTypes[type], gridSize)
+	selectedTower = t
 	updateHoverInfo(t)
 }
 
@@ -170,9 +182,14 @@ function showRange(type, x, y) {
 	fill(210,210,210, 175)
 	ellipse(x, y, type.range * gridSize, type.range * gridSize)
 	
+}
+
+function showTower(type, x, y) {
 	stroke(50,50,50,175)
 	fill(type.color[0], type.color[1], type.color[2], 210)
-	ellipse(x, y, gridSize, gridSize)
+	imageMode(CENTER)
+	image(type.towerImg, x, y, gridSize, gridSize)
+	imageMode(CORNER)
 	ellipseMode(CENTER)
 }
 
@@ -209,7 +226,7 @@ function mouseClicked() {
 	}
 	// Place tower 
 	else { 
-		placeTower(new tower(Math.floor(mouseX/gridSize) + 0.5, Math.floor(mouseY/gridSize) + 0.5, towerTypes[selectedTower], gridSize))
+		placeTower(new tower(Math.floor(mouseX/gridSize) + 0.5, Math.floor(mouseY/gridSize) + 0.5, towerTypes[selectedTower.id], gridSize))
 	}
 }
 
@@ -238,7 +255,7 @@ function mouseOnTrack(x, y) {
 }
 
 function placeTower(t) {
-	t.setStats()
+	//t.setStats()
 	if (money < t.cost) { toPlace = false }
 	else {
 		money   -= t.cost
@@ -264,7 +281,7 @@ function upgrade(t) {
 	if (towerClicked && money > t.upgradecost) {
 		t.sell = true
 		var replace = new tower(t.x, t.y, towerTypes[t.id + "2"], gridSize)
-		replace.setStats()
+		// replace.setStats()
 		updateHoverInfo(replace)
 		towers.push(replace)
 		money -= replace.cost
@@ -276,12 +293,17 @@ function nextLevel() {
 	// Creates number of enemies based on level
 	if (!paused) {
 		for (let i = 0; i < (level + 5); i++) {
-			enemies.push(new enemy(gridSize*2, i * -gridSize*2, gridSize))
+			enemies.push(new enemy(gridSize*2, i * -gridSize*2, gridSize, level))
 		}
 		// Go to next level and restart frame counter
 		level += 1
 		ticks  = 0
 		EORcash = 50
+		for (let i = 0; i < towers.length; i++) {
+			if (towers[i].targetType === "money") {
+				EORcash += towers[i].value
+			}
+		}
 	}
 }
 
@@ -289,7 +311,10 @@ function updateGameStatus() {
 	document.getElementById('level').innerHTML = 'Level: ' + level
 	document.getElementById('lives').innerHTML = 'Lives: ' + lives
 	document.getElementById('money').innerHTML = 'Money: $' + money
-	document.getElementById('ticks').innerHTML = 'Ticks: ' + ticks
+	var toggle
+	if (autoStart) { toggle = "On" }
+	else { toggle = "Off" }
+	document.getElementById('autostart').innerHTML = 'Auto Start: ' + toggle
 }
 
 function updateHoverInfo(hover) {
@@ -300,16 +325,6 @@ function updateHoverInfo(hover) {
 	document.getElementById('damage').innerHTML        = 'Damage: ' + hover.damage
 	document.getElementById('description').innerHTML   = hover.description
 	document.getElementById('tower-div').style.display = 'block'
-}
-
-function drawBackground(g) {
-	var gridX = width/g
-	var gridY = height/g
-	for (let i = 0; i <= gridX; i += 4) {
-		for (let j = 0; j <= gridY; j += 4) {
-			image(rectGrass, i*g, j*g, g*4, g*4)
-		}
-	}
 }
 
 function rotate_and_draw_image(IMAGE, img_x, img_y, img_width, img_height, img_angle){
@@ -328,7 +343,7 @@ function restartGame() {
 	projectiles  = []
 	level        = 0
 	lives        = 30
-	money        = 1000
+	money        = 600
 	EORcash      = 0
 	ticks        = 0
 	toPlace      = false
@@ -356,6 +371,7 @@ function keyPressed() {
 		case 67: 
 			paused = !paused
 			break
+		// q,w,e,r,t for each tower
 		case 69: 
 			setTower('electricity')
 			break

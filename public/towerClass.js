@@ -1,107 +1,133 @@
-function tower(x, y, towerInfo, grids) {
-    this.x = x
-    this.y = y
-    this.pos = createVector(x * grids, y * grids)
-    this.sell = false
-    this.angle = 0
-    this.hasShot = false
-
-    // Grabs stats from tower object
-    this.setStats = function() {
+class tower {
+    constructor(x, y, towerInfo, grids) {
+        this.x = x
+        this.y = y
+        this.grids = grids
+        this.pos = createVector(x * this.grids, y * this.grids)
+        this.sell = false
+        this.angle = 0
+        this.hasShot = false
+        this.towerInfo = towerInfo
+    
+        // Uses allTowers.js template
         var keys = Object.keys(towerInfo)
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i]
-            this[key] = towerInfo[key]
+            this[key] = this.towerInfo[key]
         }
         this.fireRate = this.fireCoolDown * FR
 
-        switch(this.id) {
-            case "water":
-            case "water2":
+        // Grab images for each corresponding tower
+        switch(true) {
+            case this.id.startsWith('water'):
                 this.projImg = waterAttack
+                this.towerImg = waterTower
                 break
-            case "fire":
-            case "fire2":
+            case this.id.startsWith('fire'):
                 this.projImg = fireAttack
+                this.towerImg = fireTower
                 break
-            case "earth":
-            case "earth2":
+            case this.id.startsWith('electricity'):
                 this.projImg = earthAttack
+                this.towerImg = waterTower
+                break
+            case this.id.startsWith('earth'):
+                this.projImg = earthAttack
+                this.towerImg = waterTower
+                break
+            case this.id.startsWith('farm'):
+                this.projImg = earthAttack
+                this.towerImg = waterTower
                 break
             default:
                 this.projImg = earthAttack
+                this.towerImg = waterTower
         }
     }
 
+    // Grabs stats from tower object
+
     // Draws tower
-    this.draw = function() {
+    draw() {
         stroke(0)
         strokeWeight(1)
         fill(this.color)
-        ellipseMode(CENTER)
-        ellipse(this.pos.x, this.pos.y, grids, grids)
+        rotate_and_draw_image(this.towerImg, this.pos.x - this.grids/2, this.pos.y - this.grids/2, this.grids-10, this.grids, this.angle)
         
-        //rotate_and_draw_image(bow, this.pos.x, this.pos.y, grids, grids, this.angle + 180)
     }
 
-    // Shoots when cooldown allows it
-    this.shoot = function(e, i, attacks) {
-        if (this.fireRate <= 0) {
-            for (let j = attacks, k = i; j > 0 && k < e.length; k++, j--) {
-                if (dist(this.pos.x, this.pos.y, e[k].pos.x, e[k].pos.y) <= this.range * grids / 2 && (this.targetType === "single" || this.targetType === "multi")) {
-                    this.aim(e[k].pos.x, e[k].pos.y)
-                    var p = new projectile(this.x - 0.5, this.y - 0.5, e[k], this, grids, this.angle, this.projImg)
-                    projectiles.push(p)
-                }
-                else if (this.targetType === "chain") {
-                    this.aim(e[k].pos.x, e[k].pos.y)
-                    var p = new projectile(this.x - 0.5, this.y - 0.5, e[k], this, grids, this.angle, this.projImg)
-                    projectiles.push(p)
-                }
+    shoot(i) {
+        for (let j = this.targetCount, k = i; j > 0 && k < enemies.length; k++, j--) {
+            let tx = enemies[k].pos.x, ty = enemies[k].pos.y
+            let t = enemies[k]
+            if (this.inRange(tx, ty) && this.targetType !== "chain") {
+                this.aim(tx, ty)
+                var p = new projectile(this.x, this.y, t, this, this.grids, this.angle, this.projImg)
+                projectiles.push(p)
             }
-            this.fireRate = this.fireCoolDown * FR
         }
-        if (e[i].health <= 0) { this.kill(e, i) }
+        this.fireRate = this.fireCoolDown * FR
+    }
+
+    shootBounce(i) {
+        if (this.inRange(enemies[i].pos.x, enemies[i].pos.y)) {
+            this.aim(enemies[i].pos.x, enemies[i].pos.y) 
+            var p = new bounce(this.x, this.y, enemies[i], i, this, this.grids, this.angle, this.projImg, this.pierce)
+            projectiles.push(p)
+        }
+        this.fireRate = this.fireCoolDown * FR
     }
     
-    this.shootStraight = function() {
-        if (this.fireRate <= 0) {
-            this.aim(mouseX, mouseY)
-            var p = new projectile(this.x - 0.5, this.y - 0.5, 0, this, grids, this.angle, this.projImg)
-            projectiles.push(p)
-            this.fireRate = this.fireCoolDown * FR
-        }
-    }
-
-    this.kill = function(e, i) {
-        e[i].alive = false
+    shootStraight() {
+        var p = new straight(this.x, this.y, 0, this, this.grids, this.angle, this.projImg)
+        projectiles.push(p)
+        this.fireRate = this.fireCoolDown * FR
     }
     
     // Target first enemy in the array that is within range
-    this.target = function(e) {
-        if (this.targetType === "straight" && e.length > 0) { this.shootStraight() }
+    target() {
+        if (this.targetType === "straight" && enemies.length > 0) { 
+            this.aim(mouseX, mouseY)
+            if (this.fireRate <= 0) { this.shootStraight() }
+        }
         else {
-            for (let i = 0; i <= e.length-1; i++) {
-                var distSq = sq(this.pos.x + grids/2 - e[i].pos.x) + sq(this.pos.y + grids/2 - e[i].pos.y)
-                if (distSq < sq(this.range/2 * grids)) {
-                    this.shoot(e, i, this.targetCount)
+            for (let i = 0; i < enemies.length; i++) {
+                let e = enemies[i]
+                if (this.inRange(e.pos.x, e.pos.y)) {
+                    this.aim(e.pos.x, e.pos.y)
+                    if (this.targetType === "chain" && this.fireRate <= 0) { this.shootBounce(i) }
+                    else if (this.fireRate<= 0) { this.shoot(i) }
+
+                    if (enemies[i].health <= 0) { this.kill(i) }
+                    
                     return(e[i])
                 }
             }
         }
         return(null)
     }
-
+    
     // Finds angle from tower coord to x and y coord
-    this.aim = function(x, y) {
-        var distX = this.pos.x + grids/2 - x
-        var distY = this.pos.y + grids/2 - y
+    aim(x, y) {
+        let distX = this.pos.x - x
+        let distY = this.pos.y - y
         this.angle = Math.atan2(distY, distX) * 180 / Math.PI
     }
-
+    
     // Counts firerate down
-    this.cooldown = function() {
+    cooldown() {
         if (this.fireRate > 0) { this.fireRate -= 1 }
+    }
+
+    kill(i) {
+        enemies[i].alive = false
+    }
+
+    inRange(ex, ey) {
+        if (dist(ex, ey, this.pos.x, this.pos.y) <= this.range/2 * this.grids) {
+            return true
+        }
+        return false
     }
 }
 

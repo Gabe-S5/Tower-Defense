@@ -1,5 +1,6 @@
 function enemyTrack(grids) {
-    noStroke()
+    stroke(255, 202, 95)
+    strokeWeight(1)
     fill(255,202,95)
     // rect(startX, startY, width, height)
     let laneWidth = grids*2
@@ -29,4 +30,14 @@ function drawGrid(grids) {
         strokeWeight(1)
         j += grids
     }
+}
+
+function drawBackground(g) {
+	var gridX = width/g
+	var gridY = height/g
+	for (let i = 0; i <= gridX; i += 4) {
+		for (let j = 0; j <= gridY; j += 4) {
+			image(rectGrass, i*g, j*g, g*4, g*4)
+		}
+	}
 }

@@ -123,12 +123,12 @@ canvas {
 }
 
 #level-info {
-    font-size: 1.4em;
+    font-size: 1.2em;
 }
 
 #tower-info {
     flex: 1;
-    max-width: 160px;
+    max-width: 180px
 }
 
 #tower-info button {
