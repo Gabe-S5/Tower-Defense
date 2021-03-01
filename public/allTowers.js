@@ -5,10 +5,9 @@ towerTypes.water = {
     id: "water",
     name: "Water Tower",
     cost: 50,
-    upgradecost: 175,
+    upgradecost: 300,
     range: 8,
     damage: 15,
-    pierce: 1,
     color: [24, 157, 215],
     fireCoolDown: 1,
     targetCount: 1,
@@ -19,11 +18,10 @@ towerTypes.water = {
 towerTypes.water2 = {
     id: "water2",
     name: "Water Tower Lvl 2",
-    cost: 175,
+    cost: 300,
     upgradecost: "MAX",
     range: 10,
     damage: 20,
-    pierce: 1,
     color: [24, 94, 215],
     fireCoolDown: 0.8,
     targetCount: 4,
@@ -39,7 +37,6 @@ towerTypes.fire = {
     upgradecost: 225,
     range: 18,
     damage: 60,
-    pierce: 1,
     color: [231, 71, 1],
     fireCoolDown: 2,
     targetCount: 1,
@@ -54,7 +51,6 @@ towerTypes.fire2 = {
     upgradecost: "MAX",
     range: 20,
     damage: 130,
-    pierce: 1,
     color: [196, 32, 1],
     fireCoolDown: 1.8,
     targetCount: 1,
@@ -70,10 +66,11 @@ towerTypes.electricity = {
     upgradecost: 325,
     upgradecost: 325,
     range: 5,
-    damage: 5,
+    damage: 8,
     color: [253, 247, 53],
     fireCoolDown: 0.6,
-    targetCount: 6,
+    targetCount: 1,
+    pierce: 6,
     targetType: "chain",
     description: "Shoots bolts of electricity capable of bouncing to multiple enemies."
 }
@@ -84,10 +81,11 @@ towerTypes.electricity2 = {
     cost: 325,
     upgradecost: "MAX",
     range: 7,
-    damage: 7,
+    damage: 12,
     color: [254, 193, 0],
     fireCoolDown: 0.6,
-    targetCount: 10,
+    targetCount: 1,
+    pierce: 10,
     targetType: "chain",
     description: "Gain a larger radius and a slight increase in damage."
 }
@@ -134,7 +132,7 @@ towerTypes.farm = {
     fireRate: 0,
     targetCount: 1,
     value: 40,
-    targetType: "single",
+    targetType: "money",
     description: "Generates $40 cash at the end of every round." 
 }
 
@@ -149,6 +147,6 @@ towerTypes.farm2 = {
     fireRate: 0,
     targetCount: 1,
     value: 100,
-    targetType: "single",
+    targetType: "money",
     description: "Generates $100 cash at the end of every round." 
 }
