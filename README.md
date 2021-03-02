@@ -5,8 +5,8 @@ Link [here](https://gabe-s5.github.io/Tower-Defense/)
 
 ## Keybinds
 * All towers can be selected with their first letter
-    * (A)rrow Tower
-    * (S)niper Tower
+    * (Q)rrow Tower
+    * (W)niper Tower
     * Etc..
 * Z to sell tower
 * Esc to remove hovering information
