@@ -35,6 +35,10 @@ function preload() {
 	// Map Images
 	rectGrass = loadImage('public/imgs/grass_block.png')
 
+	// Enemy Sprites
+	enemy1 = loadImage('public/imgs/enemy1Sprite.png')
+	enemy2 = loadImage('public/imgs/enemy2Sprite.png')
+
 	// Projectile Sprites
 	waterAttack = loadImage('public/imgs/waterSplash.png')
 	fireAttack = loadImage('public/imgs/fireSplash.png')
@@ -43,6 +47,9 @@ function preload() {
 	// Tower Sprites
 	waterTower = loadImage('public/imgs/waterTowerSprite.png')
 	fireTower = loadImage('public/imgs/fireTowerSprite.png')
+	earthTower = loadImage('public/imgs/earthTowerSprite.png')
+	electricityTower = loadImage('public/imgs/electricityTowerSprite.png')
+	farmTower = loadImage('public/imgs/farmTowerSprite.png')
 }
 
 function draw() {

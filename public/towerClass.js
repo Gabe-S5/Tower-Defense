@@ -29,15 +29,15 @@ class tower {
                 break
             case this.id.startsWith('electricity'):
                 this.projImg = earthAttack
-                this.towerImg = waterTower
+                this.towerImg = electricityTower
                 break
             case this.id.startsWith('earth'):
                 this.projImg = earthAttack
-                this.towerImg = waterTower
+                this.towerImg = earthTower
                 break
             case this.id.startsWith('farm'):
                 this.projImg = earthAttack
-                this.towerImg = waterTower
+                this.towerImg = farmTower
                 break
             default:
                 this.projImg = earthAttack
@@ -52,7 +52,7 @@ class tower {
         stroke(0)
         strokeWeight(1)
         fill(this.color)
-        rotate_and_draw_image(this.towerImg, this.pos.x - this.grids/2, this.pos.y - this.grids/2, this.grids-10, this.grids, this.angle)
+        rotate_and_draw_image(this.towerImg, this.pos.x - this.grids/2, this.pos.y - this.grids/2, this.grids, this.grids, this.angle)
         
     }
 
