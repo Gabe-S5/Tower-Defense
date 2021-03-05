@@ -1,7 +1,7 @@
 # Tower Defense!
 
 __A classic tower defense game! Will add upgrades, textures, sounds, and maps in the future.__
-Link [here](https://gabe-s5.github.io/Tower-Defense/)
+Link [here](gabetd.tk)
 
 ## Keybinds
 * All towers can be selected with their first letter
