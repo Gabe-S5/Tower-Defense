@@ -10,3 +10,6 @@ Link [here](https://gabe-s5.github.io/Tower-Defense/)
     * Etc..
 * Z to sell tower
 * Esc to remove hovering information
+
+### Game Preview
+![Bot Example](/elementalTowerDefense.png)
