@@ -20,7 +20,6 @@ var selectedTower
 
 
 function setup() {
-	mode = 0
 	var div    = document.getElementById('canvas-sketch')
 	var canvas = createCanvas(div.offsetWidth, div.offsetHeight)
 	canvas.parent('canvas-sketch')
